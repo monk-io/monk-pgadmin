@@ -1,0 +1,31 @@
+namespace: monk-pgadmin 
+
+pgadmin:
+  metadata:
+    website: https://www.pgadmin.org/
+    name: pgAdmin - PostgreSQL Tools
+    publisher: monk.io
+    icon: https://www.pgadmin.org/static/COMPILED/assets/img/postgres-alt.svg
+    description: TpgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
+    version: 1.0
+  defines: runnable
+  variables:
+    monk_pgadmin_port:
+      value: 8080
+      type: string
+    monk_image_tag:
+      value: latest
+    monk_default_email:
+      env: PGADMIN_DEFAULT_EMAIL
+      value: kits@monk.io
+      type: string
+    monk_default_password:
+      env: PGADMIN_DEFAULT_PASSWORD
+      value: admin
+      type: string
+  containers:
+    monk-pgadmin:
+      ports:
+        - <- `0.0.0.0:${monk_pgadmin_port}:80`
+      image: dpage/pgadmin4
+      image-tag: <- `${monk_image_tag}`
