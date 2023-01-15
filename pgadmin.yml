@@ -11,7 +11,7 @@ pgadmin:
   defines: runnable
   variables:
     monk_pgadmin_port:
-      value: 8080
+      value: 80
       type: string
     monk_image_tag:
       value: latest
@@ -29,3 +29,9 @@ pgadmin:
         - <- `0.0.0.0:${monk_pgadmin_port}:80`
       image: dpage/pgadmin4
       image-tag: <- `${monk_image_tag}`
+  services:
+    pgadmin-svc:
+      container: monk-pgadmin
+      port: 80
+      protocol: tcp
+      host-port: <- `${monk_pgadmin_port}`
