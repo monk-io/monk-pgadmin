@@ -1,4 +1,4 @@
-namespace: monk-pgadmin 
+namespace: pgadmin 
 
 pgadmin:
   metadata:
@@ -24,14 +24,14 @@ pgadmin:
       value: admin
       type: string
   containers:
-    monk-pgadmin:
+    pgadmin:
       ports:
         - <- `0.0.0.0:${monk_pgadmin_port}:80`
       image: dpage/pgadmin4
       image-tag: <- `${monk_image_tag}`
   services:
     pgadmin-svc:
-      container: monk-pgadmin
+      container: pgadmin
       port: 80
       protocol: tcp
       host-port: <- `${monk_pgadmin_port}`
