@@ -1,6 +1,6 @@
 namespace: pgadmin 
 
-pgadmin:
+pgadmin-ui:
   metadata:
     website: https://www.pgadmin.org/
     name: pgAdmin - PostgreSQL Tools
@@ -24,7 +24,7 @@ pgadmin:
       value: admin
       type: string
   containers:
-    pgadmin:
+    pgadmin-container:
       ports:
         - <- `0.0.0.0:${monk_pgadmin_port}:80`
       image: dpage/pgadmin4
