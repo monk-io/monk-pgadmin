@@ -1,14 +1,32 @@
-namespace: pgadmin 
+---
+namespace: pgadmin
 
 pgadmin-ui:
+  defines: runnable
   metadata:
     website: https://www.pgadmin.org/
     name: pgAdmin - PostgreSQL Tools
     publisher: monk.io
     icon: https://www.pgadmin.org/static/COMPILED/assets/img/postgres-alt.svg
-    description: TpgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
+    description: |
+      PgAdmin is a popular open-source administration and management tool for the PostgreSQL database system. It provides a graphical user interface for users to interact with PostgreSQL databases, allowing users to manage their databases and perform various tasks, such as creating and modifying tables, executing SQL queries, and monitoring database performance.
+
+      With PgAdmin, users can easily connect to their PostgreSQL databases, view database objects, edit and manipulate data, and manage database security. The software offers a wide range of features, including syntax highlighting for SQL queries, query history, visual query builder, and advanced data management tools.
+
+      PgAdmin supports multiple platforms, including Windows, macOS, and Linux, and offers support for various PostgreSQL versions, making it a versatile and powerful tool for managing PostgreSQL databases. Additionally, PgAdmin's intuitive user interface and ease of use make it a popular choice for both novice and experienced database administrators.
     version: 1.0
-  defines: runnable
+    source: https://github.com/pgadmin-org
+    tags: PostgreSQL, Database management, Open-source software, GUI (graphical user interface), SQL queries, Data management, Database administration, Cross-platform, Performance monitoring, Security management
+  containers:
+    pgadmin:
+      image: dpage/pgadmin4
+      image-tag: <- `${monk_image_tag}`
+  services:
+    pgadmin-svc:
+      container: pgadmin
+      port: 80
+      protocol: tcp
+      host-port: <- `${monk_pgadmin_port}`
   variables:
     monk_pgadmin_port:
       value: 80
@@ -23,15 +41,3 @@ pgadmin-ui:
       env: PGADMIN_DEFAULT_PASSWORD
       value: admin
       type: string
-  containers:
-    pgadmin-container:
-      ports:
-        - <- `0.0.0.0:${monk_pgadmin_port}:80`
-      image: dpage/pgadmin4
-      image-tag: <- `${monk_image_tag}`
-  services:
-    pgadmin-svc:
-      container: pgadmin
-      port: 80
-      protocol: tcp
-      host-port: <- `${monk_pgadmin_port}`
