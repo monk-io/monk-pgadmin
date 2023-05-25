@@ -16,7 +16,7 @@ pgadmin-ui:
       PgAdmin supports multiple platforms, including Windows, macOS, and Linux, and offers support for various PostgreSQL versions, making it a versatile and powerful tool for managing PostgreSQL databases. Additionally, PgAdmin's intuitive user interface and ease of use make it a popular choice for both novice and experienced database administrators.
     version: 1.0
     source: https://github.com/pgadmin-org
-    tags: PostgreSQL, Database management, Open-source software, GUI (graphical user interface), SQL queries, Data management, Database administration, Cross-platform, Performance monitoring, Security management
+    tags: database management, database administration, data management, sql queries, cross-platform, performance monitoring, gui, postgresql, security management
   containers:
     pgadmin:
       image: dpage/pgadmin4
