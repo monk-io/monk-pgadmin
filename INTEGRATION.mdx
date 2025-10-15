@@ -1,0 +1,182 @@
+---
+title: pgAdmin
+description: Ready-to-run pgAdmin container template for web-based PostgreSQL administration and management.
+primary_category: database-tools
+tags: [pgadmin, postgresql, database, admin-panel, template, runnable, database-management]
+integration_type: template
+hosting_models: [self-hosted]
+website_url: https://www.pgadmin.org/
+docs_url: https://www.pgadmin.org/docs/
+publisher: monk.io
+---
+
+## Overview
+
+This template provides a production‑ready pgAdmin instance as a Monk runnable. You can:
+
+- Run it directly to get a managed web-based PostgreSQL administration tool
+- Inherit it in your own database infrastructure to provide a GUI for PostgreSQL management
+
+pgAdmin is the most popular and feature-rich open-source administration and development platform for PostgreSQL. It provides a web interface for managing databases, running queries, creating backups, and monitoring server performance.
+
+## What this template manages
+
+- pgAdmin 4 web application
+- SQLite or PostgreSQL for pgAdmin metadata
+- Web UI for database administration
+- Query tool and data editor
+- Server monitoring and statistics
+- Web UI on port 5050
+
+## Quick start (run directly)
+
+1) Load templates
+
+```bash
+monk load MANIFEST
+```
+
+2) Run pgAdmin with defaults
+
+```bash
+monk run pgadmin/pgadmin
+```
+
+3) Customize credentials (recommended via inheritance)
+
+Running directly uses the defaults defined in this template's `variables`. Secrets added with `monk secrets add` will not affect this runnable unless you inherit it and reference those secrets.
+
+- Preferred: inherit and replace variables with `secret("...")` as shown below.
+- Alternative: fork/clone and edit the `variables` in `pgadmin/pgadmin.yml`, then `monk load MANIFEST` and run.
+
+Once started, access pgAdmin at `http://localhost:5050` (or the runnable hostname inside Monk networks) using the configured credentials.
+
+## Configuration
+
+Key variables you can customize in this template:
+
+```yaml
+variables:
+  pgadmin-image-tag: "latest"                                 # container image tag
+  pgadmin-port: "5050"                                        # web UI port (env: PGADMIN_LISTEN_PORT)
+  pgadmin-email: "admin@example.com"                          # admin email/username (env: PGADMIN_DEFAULT_EMAIL)
+  pgadmin-password: "..."                                     # admin password (env: PGADMIN_DEFAULT_PASSWORD)
+  pgadmin-config-enhanced-cookie-protection: "True"           # optional security config
+  pgadmin-config-login-banner: "Welcome to pgAdmin"           # optional login banner
+  pgadmin-config-console-log-level: "10"                      # optional log level
+```
+
+Data is persisted under `${monk-volume-path}/pgadmin:/var/lib/pgadmin` on the host.
+
+## Use by inheritance (recommended for database management)
+
+Inherit the pgAdmin runnable in your database infrastructure and declare a connection. Example:
+
+```yaml
+namespace: myapp
+db-admin:
+  defines: runnable
+  inherits: pgadmin/pgadmin
+  variables:
+    pgadmin-email: "dba@mycompany.com"
+    pgadmin-password: <- secret("pgadmin-password")
+db:
+  defines: runnable
+  inherits: postgres/postgres
+  variables:
+    postgres-password: <- secret("postgres-password")
+  connections:
+    admin:
+      runnable: db-admin
+      service: pgadmin
+```
+
+Then set the secrets once and run your database group:
+
+```bash
+monk secrets add -g pgadmin-password="STRONG_PASSWORD"
+monk secrets add -g postgres-password="STRONG_DB_PASSWORD"
+monk run myapp/db-admin
+```
+
+## Ports and connectivity
+
+- Service: `pgadmin` on TCP port `5050`
+- From other runnables in the same process group, use `connection-hostname("<connection-name>")` to resolve the pgAdmin host.
+- From pgAdmin, connect to PostgreSQL servers on their respective ports (typically `5432`)
+
+## Persistence and configuration
+
+- Data path: `${monk-volume-path}/pgadmin:/var/lib/pgadmin`
+- Server definitions, query history, and settings are persisted in the data path
+
+## Features
+
+- **Web-Based**: Access from any browser, no desktop client needed
+- **Query Tool**: Interactive SQL editor with syntax highlighting
+- **Data Editor**: View and edit table data
+- **Schema Browser**: Visual database structure exploration
+- **Backup & Restore**: GUI for pg_dump and pg_restore
+- **Server Monitoring**: Real-time server statistics
+- **Multi-Server**: Manage multiple PostgreSQL servers
+- **User Management**: Role-based access control
+- **Import/Export**: CSV, JSON, and other formats
+
+## Adding PostgreSQL Servers
+
+After login:
+1. Right-click "Servers" → Register → Server
+2. **General tab**: Name your connection
+3. **Connection tab**:
+   - Host: `postgres` (or server hostname)
+   - Port: `5432`
+   - Maintenance database: `postgres`
+   - Username: `postgres`
+   - Password: (save password for convenience)
+4. Click "Save"
+
+## Query Tool
+
+Features:
+- Syntax highlighting for SQL
+- Query history
+- Auto-completion
+- Explain and analyze plans
+- Export results to CSV, JSON
+- Saved queries
+
+## Use cases
+
+pgAdmin excels at:
+- PostgreSQL database administration
+- SQL query development and testing
+- Database schema design
+- Data exploration and analysis
+- Backup and restore operations
+- Server monitoring and tuning
+- Team database management
+
+
+## Related templates
+
+- See other templates in this repository for complementary services
+- Combine with monitoring tools (`prometheus-grafana/`) for observability
+- Integrate with your application stack as needed
+
+## Troubleshooting
+
+- If you changed `pgadmin-password` but the container has existing data, authentication may fail. Either reset the data volume or update the password inside pgAdmin to match.
+- Ensure the host volumes are writable by the container user.
+- Check logs:
+
+```bash
+monk logs -l 500 -f pgadmin/pgadmin
+```
+
+- For connection issues to PostgreSQL:
+  - Verify PostgreSQL is running and accessible
+  - Check hostname/IP and port
+  - Verify PostgreSQL allows connections from pgAdmin container
+  - Check `pg_hba.conf` for access rules
+- For performance issues, ensure adequate resources for pgAdmin container
+- Store server passwords securely in pgAdmin's password vault
